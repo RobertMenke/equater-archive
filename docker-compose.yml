@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  redis:
+    image: redis:6
+    hostname: redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis:/data
+    command: redis-server --requirepass "password" --appendonly yes
+
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - mysql:/var/lib/mysql
+      - .docker/mysql/entrypoint:/docker-entrypoint-initdb.d
+    ports:
+      - "9307:3306"
+
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566-4584:4566-4584"
+      - "8088:8080"
+    environment:
+      - SERVICES=s3
+      - PORT_WEB_UI=8080
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DATA_DIR=/tmp/localstack/data
+      - USE_SSL=false
+    volumes:
+      - ./.localstack:/tmp/localstack
+
+volumes:
+  mysql: {}
+  redis: {}

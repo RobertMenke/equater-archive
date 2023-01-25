@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps"   : [],
+    "details": [
+      {
+        "appID": "5U37LXZDFK.com.beauchampsullivan.Equater",
+        "paths": [
+          "/app/*",
+          "/uni/*"
+        ]
+      }
+    ]
+  }
+}

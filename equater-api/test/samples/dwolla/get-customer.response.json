@@ -1,0 +1,60 @@
+{
+    "status" : 200,
+    "headers": {},
+    "body"   : {
+        "_links"       : {
+            "deactivate"     : {
+                "href"         : "https://api-sandbox.dwolla.com/customers/a508438a-c345-4fc1-8faf-9cbd720afdd5",
+                "type"         : "application/vnd.dwolla.v1.hal+json",
+                "resource-type": "customer"
+            },
+            "self"           : {
+                "href"         : "https://api-sandbox.dwolla.com/customers/a508438a-c345-4fc1-8faf-9cbd720afdd5",
+                "type"         : "application/vnd.dwolla.v1.hal+json",
+                "resource-type": "customer"
+            },
+            "receive"        : {
+                "href"         : "https://api-sandbox.dwolla.com/transfers",
+                "type"         : "application/vnd.dwolla.v1.hal+json",
+                "resource-type": "transfer"
+            },
+            "edit-form"      : {
+                "href"         : "https://api-sandbox.dwolla.com/customers/a508438a-c345-4fc1-8faf-9cbd720afdd5",
+                "type"         : "application/vnd.dwolla.v1.hal+json; profile=\"https://github.com/dwolla/hal-forms\"",
+                "resource-type": "customer"
+            },
+            "edit"           : {
+                "href"         : "https://api-sandbox.dwolla.com/customers/a508438a-c345-4fc1-8faf-9cbd720afdd5",
+                "type"         : "application/vnd.dwolla.v1.hal+json",
+                "resource-type": "customer"
+            },
+            "funding-sources": {
+                "href"         : "https://api-sandbox.dwolla.com/customers/a508438a-c345-4fc1-8faf-9cbd720afdd5/funding-sources",
+                "type"         : "application/vnd.dwolla.v1.hal+json",
+                "resource-type": "funding-source"
+            },
+            "transfers"      : {
+                "href"         : "https://api-sandbox.dwolla.com/customers/a508438a-c345-4fc1-8faf-9cbd720afdd5/transfers",
+                "type"         : "application/vnd.dwolla.v1.hal+json",
+                "resource-type": "transfer"
+            },
+            "send"           : {
+                "href"         : "https://api-sandbox.dwolla.com/transfers",
+                "type"         : "application/vnd.dwolla.v1.hal+json",
+                "resource-type": "transfer"
+            }
+        },
+        "id"           : "a508438a-c345-4fc1-8faf-9cbd720afdd5",
+        "firstName"    : "Robert",
+        "lastName"     : "Menke",
+        "email"        : "robert.b.menke@gmail.com",
+        "type"         : "personal",
+        "status"       : "verified",
+        "created"      : "2019-10-20T17:22:09.770Z",
+        "address1"     : "123 watery lane",
+        "city"         : "St. Petersburg",
+        "state"        : "FL",
+        "postalCode"   : "12345",
+        "correlationId": "f85dc355-178e-4d89-9d60-366f1f77a603"
+    }
+}

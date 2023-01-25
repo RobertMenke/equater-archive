@@ -1,0 +1,164 @@
+name: Test
+
+env:
+  SERVICES: s3
+  DATA_DIR: /tmp/localstack/data
+  USE_SSL: false
+  AWS_HOST: localstack
+  API_BASE: ${{ secrets.API_BASE }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}  
+  DB_ENGINE: ${{ secrets.DB_ENGINE }}
+  DB_HOSTNAME: ${{ secrets.DB_HOSTNAME }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DB_PORT: ${{ secrets.DB_PORT }}
+  DB_USERNAME: ${{ secrets.DB_USERNAME }}
+  DWOLLA_ENVIRONMENT: ${{ secrets.DWOLLA_ENVIRONMENT }}
+  DWOLLA_PUBLIC_KEY: ${{ secrets.DWOLLA_PUBLIC_KEY }}
+  DWOLLA_SECRET_KEY: ${{ secrets.DWOLLA_SECRET_KEY }}
+  EMAIL_CONFIRMED_EXPIRATION_IN_DAYS: ${{ secrets.EMAIL_CONFIRMED_EXPIRATION_IN_DAYS }}
+  FIREBASE_ADMIN_SDK_PRIVATE_KEY: ${{ secrets.FIREBASE_ADMIN_SDK_PRIVATE_KEY }}
+  IS_TESTING: ${{ secrets.IS_TESTING }}
+  NODE_ENV: ${{ secrets.NODE_ENV }}
+  PASSWORD_RESET_EXPIRATION_IN_DAYS: ${{ secrets.PASSWORD_RESET_EXPIRATION_IN_DAYS }}
+  PLAID_CLIENT_ID: ${{ secrets.PLAID_CLIENT_ID }}
+  PLAID_ENVIRONMENT: ${{ secrets.PLAID_ENVIRONMENT }}
+  PLAID_PUBLIC_KEY: ${{ secrets.PLAID_PUBLIC_KEY }}
+  PLAID_SECRET_KEY: ${{ secrets.PLAID_SECRET_KEY }}
+  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+  PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+  RECURRENT_PAYMENT_QUEUE_DELAY_MILLIS: ${{ secrets.RECURRENT_PAYMENT_QUEUE_DELAY_MILLIS }}
+  REDIS_HOST: ${{ secrets.REDIS_HOST }}
+  REDIS_PORT: ${{ secrets.REDIS_PORT }}
+  REDIS_URL: ${{ secrets.REDIS_URL }}
+  S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+  S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+  SERVER_ENVIRONMENT: ${{ secrets.SERVER_ENVIRONMENT }}
+  TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+  TWILIO_ALERT_FROM_NUMBER: ${{ secrets.TWILIO_ALERT_FROM_NUMBER }}
+  TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+  VENDOR_ASSETS_S3_BUCKET: ${{ secrets.VENDOR_ASSETS_S3_BUCKET }}
+  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  
+on:
+  push:
+    branches: 
+      - '**'
+      - '!main' # Branch should only be merged into following a successful build
+      - '!staging' # Branch should only be merged into following a successful build
+  # pull_request:
+  #   branches: [ main ]
+  #   types: [opened, reopened]
+
+jobs:
+  test-api:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: bitnami/mysql:8.0.20
+        ports:
+          - 3306:3306/tcp
+        env:
+          ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_ROOT_USER: root
+          MYSQL_ROOT_PASSWORD: example
+          MYSQL_DATABASE: testdb
+          MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+      localstack:
+        image: localstack/localstack:latest
+        ports:
+          - 4566:4566
+        env:
+          SERVICES: ${{ env.SERVICES }}
+          DEBUG: ""
+          DATA_DIR: ""
+          LAMBDA_EXECUTOR: ""
+          KINESIS_ERROR_PROBABILITY: ""
+          DOCKER_HOST: unix:///var/run/docker.sock
+          HOST_TMP_FOLDER: "/tmp"
+          HOSTNAME_EXTERNAL: ${{ env.AWS_HOST }} # Required so that resource urls are provided properly
+          # e.g sqs url will get localhost if we don't set this env to map our service
+        options: >-
+          --name=localstack
+          --health-cmd="curl -sS 127.0.0.1:4566 || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379/tcp
+    steps:
+      - run: sudo apt-get update
+      - uses: actions/checkout@v2
+      # Only run tests when typescript files have changed
+      - uses: dorny/paths-filter@v2.10.2
+        id: filter
+        with:
+          filters: |
+            ts:
+              - '**/*.ts'
+            json:
+              - '**/*.json'
+      - name: Use Node.js 18.9.1
+        uses: actions/setup-node@v2
+        # Currently reverting to 16.10 because there's a massive memory leak that otherwise
+        # causes tests to fail
+        with:
+          node-version: '16.10.0'
+      - run: cd equater-api && npm ci
+      - name: Install AWS CLI
+        if: ${{ steps.filter.outputs.ts == 'true' || steps.filter.outputs.json == 'true' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-dev
+          sudo pip3 install awscli
+      - name: Install Firebase Key
+        if: ${{ steps.filter.outputs.ts == 'true' || steps.filter.outputs.json == 'true' }}
+        run: aws s3api get-object --bucket equater-ci-config --key firebase-admin-sdk-private-key.json ./firebase-admin-sdk-private-key.json
+      - name: Install Terraform
+        if: ${{ steps.filter.outputs.ts == 'true' || steps.filter.outputs.json == 'true' }}
+        run: |
+          cd /tmp && \
+          wget https://releases.hashicorp.com/terraform/1.1.2/terraform_1.1.2_linux_amd64.zip && \
+          unzip terraform_1.1.2_linux_amd64.zip && \
+          sudo mv terraform /usr/local/bin/terraform && \
+          cd -
+      - name: Set Up Localstack
+        if: ${{ steps.filter.outputs.ts == 'true' || steps.filter.outputs.json == 'true' }}
+        run: cd terraform && terraform init && terraform apply -auto-approve
+      - name: Run API Tests
+        if: ${{ steps.filter.outputs.ts == 'true' || steps.filter.outputs.json == 'true' }}
+        run: make test/api
+      - name: Notify slack success
+        if: ${{ steps.filter.outputs.ts == 'true' && steps.filter.outputs.json == 'true' && success() }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel_id: 'CS1KUH5T2'
+          status: SUCCESS
+          color: good
+      - name: Notify slack fail
+        if: ${{ steps.filter.outputs.ts == 'true' && failure() }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel_id: 'CS1KUH5T2'
+          status: FAILED
+          color: danger

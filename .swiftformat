@@ -1,0 +1,9 @@
+--swiftversion 5.6.1
+--trimwhitespace always
+--indent tab
+--tabwidth 4
+--elseposition same-line
+--stripunusedargs closure-only
+--self remove
+--redundanttype inferred
+--disable hoistPatternLet

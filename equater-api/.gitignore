@@ -1,0 +1,17 @@
+.idea/
+build/
+out/
+.env
+.tests.env
+node_modules
+dist
+run.sh
+.localstack
+terraform/.terraform
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+ormconfig.json
+coverage/
+firebase-admin-sdk-private-key.txt
+firebase-admin-sdk-private-key.json
+.tmuxinator.yml

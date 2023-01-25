@@ -1,0 +1,224 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+}
+
+.theme-dark {
+    --bg-app-primary: #101213;
+    --bg-app-secondary: #272B2F;
+    --bg-app-secondary-dark: #202326;
+
+    /* accent color */
+    --app-accent: #7A04EB;
+    --app-accent-light: #8713FB;
+    --app-accent-dark: #6D04D6;
+    --app-accent-100: #E5CCFE;
+
+    --app-text-primary: #D7D0DC;
+    --app-text-secondary: #D1C5DC;
+    --app-text-accent-primary: #7A04EB;
+    --app-text-accent-light: #8713FB;
+    --app-text-accent-dark: #6D04D6;
+
+    --app-royal-blue: #252FCA;
+    --app-royal-blue-light: #2C6EFF;
+}
+
+.bg-app-secondary--important {
+    background: var(--bg-app-secondary) !important;
+}
+
+.bg-accent-primary--important {
+    background: var(--app-accent) !important;
+}
+
+/*Animations*/
+.fade-in-section {
+    opacity: 0;
+    will-change: opacity, visibility;
+    transform: translate(0, 10%);
+}
+
+.fade-in-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 750ms ease-out;
+}
+
+.fade-in {
+    transition: visibility 0.5s ease-in, opacity 0.5s ease-in;
+}
+
+.animate-up-down {
+    animation: upDown 0.7s linear infinite alternate;
+}
+
+.linear {
+    animation: linear 0.7s linear;
+}
+
+@keyframes linear {
+    from {
+        opacity: 0;
+        -webkit-transform: translate(0px,0px);
+        -ms-transform: translate(0px,0px);
+        transform: translate(0px,0px);
+        letter-spacing: 0.5vw;
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: translate(0,0);
+        -ms-transform: translate(0,0);
+        transform: translate(0,0);
+        letter-spacing: 0.3vw;
+    }
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes upDown {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(8px);
+    }
+}
+
+.header-container {
+    transition: background-color 300ms ease 0s;
+    z-index: 100;
+}
+
+.header-blur.bg-black {
+    background: #000;
+}
+
+.header-blur {
+    backdrop-filter: blur(5px);
+    background: rgba(16, 17, 19, 0.5);
+}
+
+.full-page-within-layout {
+    min-height: calc(100vh - 100px - 60px);
+}
+
+.lottie > * {
+    width: 90% !important;
+    margin: 0 auto;
+}
+
+.lottie > svg > g > g:nth-child(6) > g:nth-child(1) > g:nth-child(1) > path {
+    fill: rgb(122, 4, 235);
+}
+
+.lottie > svg > g > g:nth-child(4) > g:nth-child(13) > g:nth-child(1) > path {
+    fill: rgb(122, 4, 235);
+}
+
+.lottie > svg > g > g:nth-child(5) > g:nth-child(13) > g:nth-child(1) > path {
+    fill: rgb(122, 4, 235);
+}
+
+.lottie-text-adjustment {
+    margin-top: -50px;
+}
+
+.value-prop-grid {
+    max-width: 1200px;
+}
+
+.pricing-grid {
+    max-width: 800px;
+}
+
+.value-prop-card {
+    width: calc(33% - 28px);
+    box-shadow: rgba(0, 0, 0, 0.3) 0 13px 40px, rgba(0, 0, 0, 0.2) 0 4px 4px;
+    margin: 14px;
+    border-radius: 16px;
+    padding: 52px;
+}
+
+.flex-row-break {
+    flex-direction: row;
+}
+
+.flex-row-break-reverse {
+    flex-direction: row;
+}
+
+.plain-link {
+    @apply text-secondary;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.plain-link:hover {
+    text-decoration: underline;
+}
+
+/*Media Queries*/
+@media (max-width: 1024px) {
+    .value-prop-card {
+        width: calc(50% - 28px);
+        padding: 24px 32px;
+    }
+
+    .flex-row-break {
+        flex-direction: column;
+    }
+
+    .flex-row-break-reverse {
+        flex-direction: column-reverse;
+    }
+}
+
+@media (max-width: 600px) {
+    .value-prop-card {
+        width: 100%;
+    }
+
+    .svg-phone {
+        height: 700px;
+    }
+
+    .lottie {
+        /*min-height: 320px;*/
+        min-width: 100vw;
+    }
+}
+
+@media (max-width: 1024px) {
+    /*Disable react reveal on mobile*/
+    /*.react-reveal {*/
+    /*    animation: none !important;*/
+    /*    opacity: 1 !important;*/
+    /*}*/
+}
+
+@media (max-height: 800px) {
+
+    .lottie > * {
+        width: 75% !important;
+    }
+
+    .lottie-text-adjustment {
+        margin-top: -25px;
+    }
+}
+
+.backdrop-filter-blur-5 {
+    backdrop-filter: blur(5px);
+}
+

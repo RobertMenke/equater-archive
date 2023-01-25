@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "duke-energy-logo.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

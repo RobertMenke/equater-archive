@@ -1,0 +1,71 @@
+name: Deploy to heroku (prod)
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+# Run workflow on release
+on:
+  release:
+    types: [published]
+
+# Your workflows jobs.
+jobs:
+  build-and-deploy-api:
+    runs-on: ubuntu-latest
+    environment: api/production
+    steps:
+      # Check-out your repository.
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            registry.heroku.com/equater-api/web
+          tags: |
+            type=sha
+      - name: Build & Push Docker Image to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          cd equater-api 
+          docker build -f Dockerfile --tag ${{ steps.meta.outputs.tags }} .
+          heroku container:login
+          heroku container:push -a equater-api web
+          heroku container:release -a equater-api web
+
+  build-and-deploy-web:
+    runs-on: ubuntu-latest
+    environment: web/production
+    steps:
+      # Check-out your repository.
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-dev
+          sudo pip3 install awscli
+      - name: Install staging environment variables
+        run: aws s3api get-object --bucket equater-ci-config --key .env.production ./equater-web/.env.production
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            registry.heroku.com/equater-web/web
+          tags: |
+            type=sha
+      - name: Build & Push Docker Image to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          cd equater-web
+          docker build -f Dockerfile --tag ${{ steps.meta.outputs.tags }} .
+          heroku container:login
+          heroku container:push -a equater-web web
+          heroku container:release -a equater-web web

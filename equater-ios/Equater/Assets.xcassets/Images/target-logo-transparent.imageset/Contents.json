@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "target-logo-png-transparent.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

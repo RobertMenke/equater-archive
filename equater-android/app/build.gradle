@@ -1,0 +1,261 @@
+import com.equater.equater.buildsrc.Libs
+
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+    id 'kotlinx-serialization'
+    id 'dagger.hilt.android.plugin'
+    id 'com.google.firebase.crashlytics'
+    id 'com.google.gms.google-services'
+}
+
+kapt {
+    correctErrorTypes = true
+    useBuildCache = true
+    arguments {
+        // https://greenrobot.org/eventbus/documentation/subscriber-index/
+        arg('eventBusIndex', 'com.equater.equater.EventBusIndex')
+    }
+}
+
+android {
+    compileSdkVersion 33
+
+    defaultConfig {
+        applicationId "com.equater.equater"
+        minSdkVersion 26
+        targetSdkVersion 33
+        versionCode 32
+        versionName "1.4.2"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            buildConfigField "String", "SUPPORT_PHONE_NUMBER", SUPPORT_PHONE_NUMBER
+            buildConfigField "String", "SUPPORT_PHONE_NUMBER_E164", SUPPORT_PHONE_NUMBER_E164
+            buildConfigField "String", "SUPPORT_EMAIL_ADDRESS", SUPPORT_EMAIL_ADDRESS
+            buildConfigField "String", "GOOGLE_API_KEY", GOOGLE_API_KEY
+            buildConfigField "String", "DATA_DOG_API_KEY", DATA_DOG_API_KEY
+            // Environment-dependent
+            buildConfigField "String", "API_BASE", API_BASE
+            buildConfigField "String", "WEB_BASE", WEB_BASE
+            buildConfigField "String", "WEB_HOST", WEB_HOST
+            buildConfigField "String", "ENVIRONMENT", ENVIRONMENT
+            resValue "string", "DEEP_LINK_PREFIX", "${WEB_HOST}/app"
+            // The following configuration limits the "dev" flavor to using
+            // English stringresources and xxhdpi screen-density resources.
+//            resConfigs "en", "xxhdpi"
+//            ext.alwaysUpdateBuildId = false
+        }
+        release {
+            ext.enableCrashlytics = true
+            // Enables code shrinking, obfuscation, and optimization for only
+            // your project's release build type.
+            minifyEnabled false
+
+            // Enables resource shrinking, which is performed by the
+            // Android Gradle plugin.
+            shrinkResources false
+
+            // Includes the default ProGuard rules files that are packaged with
+            // the Android Gradle plugin. To learn more, go to the section about
+            // R8 configuration files.
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            buildConfigField "String", "SUPPORT_PHONE_NUMBER", SUPPORT_PHONE_NUMBER
+            buildConfigField "String", "SUPPORT_PHONE_NUMBER_E164", SUPPORT_PHONE_NUMBER_E164
+            buildConfigField "String", "SUPPORT_EMAIL_ADDRESS", SUPPORT_EMAIL_ADDRESS
+            buildConfigField "String", "GOOGLE_API_KEY", GOOGLE_API_KEY
+            buildConfigField "String", "DATA_DOG_API_KEY", DATA_DOG_API_KEY
+            // Environment-dependent
+            buildConfigField "String", "API_BASE", "\"https://www.equater.io\""
+            buildConfigField "String", "WEB_BASE", "\"https://www.equater.app\""
+            buildConfigField "String", "WEB_HOST", "\"www.equater.app\""
+            buildConfigField "String", "ENVIRONMENT", "\"production\""
+            resValue "string", "DEEP_LINK_PREFIX", "\"www.equater.app/app\""
+            // Staging
+//            buildConfigField "String", "API_BASE", "\"https://staging.equater.io\""
+//            buildConfigField "String", "WEB_BASE", "\"https://staging.equater.app\""
+//            buildConfigField "String", "WEB_HOST", "\"staging.equater.app\""
+//            buildConfigField "String", "ENVIRONMENT", "\"staging\""
+//            resValue "string", "DEEP_LINK_PREFIX", "\"staging.equater.app/app\""
+        }
+    }
+
+    compileOptions {
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion Libs.AndroidX.Compose.compilerVersion
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11
+    }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11
+        freeCompilerArgs += [
+                "-Xallow-jvm-ir-dependencies",
+                "-Xskip-prerelease-check",
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true",
+                "-Xopt-in=kotlin.RequiresOptIn"
+        ]
+    }
+}
+
+configurations {
+    ktlint
+}
+
+dependencies {
+    implementation Libs.Kotlin.stdlib
+    implementation Libs.Kotlin.reflection
+    implementation Libs.Kotlin.serialization
+    implementation Libs.Coroutines.android
+
+    implementation Libs.AndroidX.coreKtx
+    implementation Libs.AndroidX.appcompat
+    implementation Libs.AndroidX.palette
+    implementation Libs.material
+
+    implementation Libs.Android.webkit
+
+    implementation Libs.Arrow.core
+//    implementation Libs.Arrow.optics
+//    kapt Libs.Arrow.kapt
+
+    implementation Libs.AndroidX.Lifecycle.viewModel
+    implementation Libs.AndroidX.Lifecycle.viewModelCompose
+
+    implementation Libs.AndroidX.Compose.foundation
+    implementation Libs.AndroidX.Compose.material
+    implementation Libs.AndroidX.Compose.materialIconsExtended
+
+    implementation Libs.AndroidX.Compose.tooling
+    implementation Libs.AndroidX.Compose.animation
+    implementation Libs.AndroidX.Navigation.navigationCompose
+    implementation Libs.AndroidX.Compose.coil
+
+    implementation Libs.Accompanist.webview
+    implementation Libs.Accompanist.swipeRefresh
+    implementation Libs.Accompanist.navigation
+
+    implementation Libs.Jackson.core
+    implementation Libs.Jackson.databind
+    implementation Libs.Jackson.annotations
+    implementation Libs.Jackson.kotlinSupport
+
+    implementation Libs.GooglePlaces.api
+
+    implementation Libs.Hilt.hilt
+    implementation Libs.Hilt.workManager
+    implementation Libs.Kotlin.stdlib
+    implementation Libs.Hilt.navigation
+    implementation Libs.Hilt.navigationCompose
+
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    implementation Libs.Konfetti.konfetti
+
+    kapt Libs.Hilt.compiler
+    kapt Libs.Hilt.androidxCompiler
+    testImplementation Libs.Hilt.testAndroid
+
+    implementation Libs.OkHttp.okhttp
+    implementation Libs.OkHttp.logging
+    implementation Libs.Retrofit.retrofit
+    implementation Libs.Retrofit.jacksonConverter
+
+    implementation Libs.Timber.timber
+    implementation Libs.DataDog.logger
+    implementation Libs.DataDog.timber
+
+    implementation Libs.AndroidX.Room.runtime
+    implementation Libs.AndroidX.Room.ktx
+    kapt Libs.AndroidX.Room.compiler
+
+    implementation Libs.GreenRobotEventBus.eventBus
+    kapt Libs.GreenRobotEventBus.annotationProcessor
+
+    implementation Libs.Plaid.linkKit
+
+    implementation Libs.Lottie.lottie
+    implementation Libs.Lottie.lottieCompose
+
+    implementation Libs.Firebase.firebase
+    implementation Libs.Firebase.crashlytics
+    implementation Libs.Firebase.cloudMessaging
+
+    implementation Libs.AndroidX.Navigation.fragment
+    implementation Libs.AndroidX.Navigation.ui
+    implementation Libs.AndroidX.Navigation.dynamicFeatures
+    implementation Libs.AndroidX.constraintLayout
+    implementation Libs.AndroidX.activity
+    implementation Libs.AndroidX.activityCompose
+
+    implementation Libs.Emoji.emoji2
+    implementation Libs.Emoji.emoji2Views
+    implementation Libs.Emoji.emoji2ViewsHelper
+
+    implementation Libs.AndroidX.WorkManager.workManager
+    implementation Libs.AndroidX.WorkManager.gcmNetworkManager
+    testImplementation Libs.AndroidX.WorkManager.test
+
+    implementation Libs.Validation.apacheCommonsValidation
+
+    implementation Libs.SocketIO.socketIoClient
+
+    testImplementation Libs.AndroidX.Test.core
+    testImplementation Libs.AndroidX.Test.rules
+    testImplementation Libs.AndroidX.Test.espressoCore
+    androidTestImplementation Libs.AndroidX.Navigation.testing
+
+    ktlint("com.pinterest:ktlint:0.47.1") {
+        attributes {
+            attribute(Bundling.BUNDLING_ATTRIBUTE, getObjects().named(Bundling, Bundling.EXTERNAL))
+        }
+    }
+
+    coreLibraryDesugaring Libs.jdkDesugar
+}
+
+
+task ktlint(type: JavaExec, group: "verification") {
+  description = "Check Kotlin code style."
+  classpath = configurations.ktlint
+  mainClass.set("com.pinterest.ktlint.Main")
+  args "src/**/*.kt"
+  // see https://pinterest.github.io/ktlint/install/cli/#command-line-usage for more information
+}
+
+check.dependsOn ktlint
+
+task ktlintFormat(type: JavaExec, group: "formatting") {
+  description = "Fix Kotlin code style deviations."
+  classpath = configurations.ktlint
+  mainClass.set("com.pinterest.ktlint.Main")
+  args "-F", "src/**/*.kt"
+  // see https://pinterest.github.io/ktlint/install/cli/#command-line-usage for more information
+}

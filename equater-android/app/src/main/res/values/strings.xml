@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Equater</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="create_agreement">Create</string>
+    <string name="manage_agreement">Agreements</string>
+    <string name="transaction_history">Transactions</string>
+    <string name="default_notification_channel_id">equater_notification_channel</string>
+    <string name="channel_id">Equater</string>
+    <string name="channel_name">equater</string>
+    <string name="channel_description">Notifications that keep you up to date on your Equater account and activity</string>
+
+<!-- Long strings that make the linter complain :/ -->
+  <string name="equater_balance_description">In rare cases when a transaction doesn’t succeed, funds may temporarily be stored by Equater as an Equater Balance.</string>
+  <string name="deletion_description">Deleting your account is permanent and cannot be undone. Please be certain this is what you want.</string>
+  <string name="deletion_confirmation_description">Delete your Equater account and all associated data. You CANNOT undo this action and you CANNOT recover your account. Think carefully before you proceed.</string>
+  <string name="verified_customer_subtitle">Once set, your date of birth and SSN cannot be changed, but you can use this form to update your address.</string>
+  <string name="reverification_subtitle">Our identity provider could not verify your identity. Please update your information or contact %1$s or %2$s for assistance.</string>
+  <string name="shared_bill_description">Pick a merchant like Netflix, tell us who you split it with, and we’ll handle settling up automatically when you’re charged.</string>
+  <string name="scheduled_payment_description">Create a series of scheduled payments by specifying a start/end date, an interval, payers, and amounts.</string>
+  <string name="place_not_found_description">Snap! This one isn\'t in our database. If we find it on Google Maps we can still split the bill. Give it a try!</string>
+  <string name="email_verification_description">Before you proceed, we need you to verify your email. Check your inbox (spam folder too!) or use this button to resend the confirmation email.</string>
+  <string name="welcome_screen_description">Equater is built for shared monthly expenses. Tell us how you split your expenses and we\'ll settle up for you.</string>
+  <string name="unable_to_link_account">Unable to link account. Close the app &amp; try again or contact %1$s</string>
+  <string name="relink_bank_account_description">%1$s has asked that you verify your login information again so that we can continue serving you.</string>
+  <string name="depository_account_explanation">Since you pay for %1$s with a credit card we also need a bank account (checking/savings) on file that we can use to deposit the money your friends send you.</string>
+</resources>
